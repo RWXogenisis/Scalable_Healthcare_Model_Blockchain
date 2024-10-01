@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Interface</title>
+    
+    <link rel="stylesheet" href="index.css">  <!-- Link to the external CSS file -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.0/web3.min.js"></script>
+    <script src="app.js"></script>
+</head>
+<body>
+    <div>
+        <h2>Add Doctor</h2>
+        <form id="addDoctorForm">
+            <label>ID: <input type="number" id="doctorId" required></label>
+            <label>Name: <input type="text" id="doctorName" required></label>
+            <label>Age: <input type="number" id="doctorAge" required></label>
+            <label>Department: <input type="text" id="doctorDepartment" required></label>
+            <button type="submit">Add Doctor</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Get Doctor Info</h2>
+        <form id="getDoctorForm">
+            <label>Doctor ID: <input type="number" id="doctorIdFetch" required></label>
+            <button type="submit">Get Doctor</button>
+        </form>
+        <div id="doctorInfo"></div>
+    </div>
+
+    <!-- Add similar sections for Patients and Appointments -->
+</body>
+</html>
