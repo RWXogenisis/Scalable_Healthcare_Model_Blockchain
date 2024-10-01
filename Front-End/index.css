@@ -7,6 +7,8 @@ body {
 
 h2 {
     color: #333;
+    margin-bottom: 10px;
+    /* Space below the heading */
 }
 
 div {
@@ -51,4 +53,43 @@ button:hover {
     padding: 10px;
     background-color: #e9ecef;
     border-radius: 4px;
+}
+
+.action-selector-container {
+    text-align: center;
+    /* Center the content */
+    margin-bottom: 20px;
+    /* Space below the action selector */
+}
+
+/* Style for the dropdown selector */
+.action-selector {
+    padding: 10px;
+    /* Padding inside the select box */
+    font-size: 16px;
+    /* Font size for the dropdown text */
+    border: 1px solid #ddd;
+    /* Light border around the dropdown */
+    border-radius: 4px;
+    /* Rounded corners */
+    background-color: #fff;
+    /* White background for the dropdown */
+    cursor: pointer;
+    /* Pointer cursor on hover */
+    transition: border-color 0.3s;
+    /* Smooth border color change on hover */
+}
+
+/* Change border color on focus */
+.action-selector:focus {
+    border-color: #28a745;
+    /* Green border on focus */
+    outline: none;
+    /* Remove default outline */
+}
+
+/* Change background color on hover */
+.action-selector:hover {
+    background-color: #f1f1f1;
+    /* Light gray background on hover */
 }
