@@ -29,73 +29,164 @@ window.addEventListener('load', async () => {
         const patientContract = new web3.eth.Contract(patientContractJson.abi, patientAddress);
         const appointmentContract = new web3.eth.Contract(appointmentContractJson.abi, appointmentAddress);
 
-        // ---------------- Doctor Contract Functionality ----------------
+        // Dropdown selection functionality
+        document.getElementById('actionSelector').addEventListener('change', function () {
+            const selectedAction = this.value;
+            document.getElementById('addDoctorSection').style.display = 'none';
+            document.getElementById('addPatientSection').style.display = 'none';
+            document.getElementById('bookAppointmentSection').style.display = 'none';
 
-        /**
-         * Event listener for submitting the Add Doctor form.
-         * Captures form data, calls the addDoctor function of the smart contract, and sends a transaction.
-         */
-        document.getElementById('addDoctorForm').addEventListener('submit', async (e) => {
-            e.preventDefault();  // Prevent the form from refreshing the page
-            
-            // Capture input values from the form fields
-            const id = document.getElementById('doctorId').value;  // Get Doctor ID input
-            const name = document.getElementById('doctorName').value;  // Get Doctor Name input
-            const age = document.getElementById('doctorAge').value;  // Get Doctor Age input
-            const department = document.getElementById('doctorDepartment').value;  // Get Doctor Department input
-        
-            try {
-                // Call the smart contract method addDoctor with the form inputs
-                await doctorContract.methods.addDoctor(id, name, age, department)
-                    .send({ from: defaultAccount });  // Send the transaction from the default account
-
-                // Notify user on success
-                alert('Doctor added successfully!');
-            } catch (error) {
-                // Log and display error in case of failure
-                console.error(error);
-                alert('Error adding doctor: ' + error.message);  // Display a detailed error message to the user
+            if (selectedAction === 'addDoctor') {
+                document.getElementById('addDoctorSection').style.display = 'block';
+            } else if (selectedAction === 'addPatient') {
+                document.getElementById('addPatientSection').style.display = 'block';
+            } else if (selectedAction === 'bookAppointment') {
+                document.getElementById('bookAppointmentSection').style.display = 'block';
             }
         });
 
-        /**
-         * Event listener for submitting the Get Doctor form.
-         * Fetches doctor information from the smart contract and displays it.
-         */
+        // Set the default to show 'Add Doctor' section
+        document.getElementById('addDoctorSection').style.display = 'block';
+
+        // ---------------- Doctor Contract Functionality ----------------
+
+        document.getElementById('addDoctorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('doctorId').value;
+            const name = document.getElementById('doctorName').value;
+            const age = document.getElementById('doctorAge').value;
+            const department = document.getElementById('doctorDepartment').value;
+
+            try {
+                await doctorContract.methods.addDoctor(id, name, age, department)
+                    .send({ from: defaultAccount });
+                alert('Doctor added successfully!');
+            } catch (error) {
+                console.error(error);
+                alert('Error adding doctor: ' + error.message);
+            }
+        });
+
         document.getElementById('getDoctorForm').addEventListener('submit', async (e) => {
-            e.preventDefault();  // Prevent the form from refreshing the page
-            
-            // Capture the Doctor ID input and ensure it is converted to a number
+            e.preventDefault();
             const doctorId = Number(document.getElementById('doctorIdFetch').value);
-            console.log(doctorId);  // Log the Doctor ID to check its value
-        
-            // Check if the ID is a valid number before proceeding
             if (isNaN(doctorId)) {
                 alert('Please enter a valid Doctor ID.');
-                return;  // Exit if the ID is not a number
+                return;
             }
-        
-            try {
-                // Call the smart contract method getDoctor to fetch details using the Doctor ID
-                const doctor = await doctorContract.methods.getDoctor(doctorId).call();
 
-                // Display the returned doctor data in the 'doctorInfo' div
+            try {
+                const doctor = await doctorContract.methods.getDoctor(doctorId).call();
                 document.getElementById('doctorInfo').innerHTML = `
                     <p>Name: ${doctor[0]}</p>
                     <p>Age: ${doctor[2]}</p>
                     <p>Department: ${doctor[1]}</p>
                 `;
             } catch (error) {
-                // Log and display error in case of failure
                 console.error(error);
-                alert('Error fetching doctor information: ' + error.message);  // Display a detailed error message to the user
+                alert('Error fetching doctor information: ' + error.message);
             }
         });
 
-        // ---------------- Similarly, add patient and appointment contract functionality here ----------------
+        // ---------------- Patient Contract Functionality ----------------
+
+        document.getElementById('addPatientForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('patientId').value;
+            const name = document.getElementById('patientName').value;
+            const age = document.getElementById('patientAge').value;
+            const medicalHistory = document.getElementById('patientMedicalHistory').value;
+
+            try {
+                await patientContract.methods.addPatient(id, name, age, medicalHistory)
+                    .send({ from: defaultAccount });
+                alert('Patient added successfully!');
+            } catch (error) {
+                console.error(error);
+                alert('Error adding patient: ' + error.message);
+            }
+        });
+
+        document.getElementById('getPatientForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const patientId = Number(document.getElementById('patientIdFetch').value);
+            if (isNaN(patientId)) {
+                alert('Please enter a valid Patient ID.');
+                return;
+            }
+
+            try {
+                const patient = await patientContract.methods.getPatient(patientId).call();
+                document.getElementById('patientInfo').innerHTML = `
+                    <p>Name: ${patient[0]}</p>
+                    <p>Age: ${patient[1]}</p>
+                    <p>Medical History: ${patient[2]}</p>
+                `;
+            } catch (error) {
+                console.error(error);
+                alert('Error fetching patient information: ' + error.message);
+            }
+        });
+
+        // ---------------- Appointment Contract Functionality ----------------
+
+        document.getElementById('bookAppointmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const appointmentId = document.getElementById('appointmentId').value;
+            const patientId = document.getElementById('appointmentPatientId').value;
+            const doctorId = document.getElementById('appointmentDoctorId').value;
+            const roomId = document.getElementById('appointmentRoomId').value;
+            const appointmentDate = document.getElementById('appointmentDate').value;
+
+            try {
+                // Check if patient exists
+                const patientExists = await patientContract.methods.getPatient(patientId).call();
+                if (!patientExists || patientExists[0] === "") {
+                    alert('Patient ID does not exist. Please add the patient before booking an appointment.');
+                    return;
+                }
+
+                // Check if doctor exists
+                const doctorExists = await doctorContract.methods.getDoctor(doctorId).call();
+                if (!doctorExists || doctorExists[0] === "") {
+                    alert('Doctor ID does not exist. Please add the doctor before booking an appointment.');
+                    return;
+                }
+
+                // If both patient and doctor exist, create the appointment
+                await appointmentContract.methods.createAppointment(appointmentId, patientId, doctorId, roomId, appointmentDate)
+                    .send({ from: defaultAccount });
+                alert('Appointment booked successfully!');
+            } catch (error) {
+                console.error(error);
+                alert('Error booking appointment: ' + error.message);
+            }
+        });
+
+
+        document.getElementById('getAppointmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const appointmentId = Number(document.getElementById('appointmentIdFetch').value);
+            if (isNaN(appointmentId)) {
+                alert('Please enter a valid Appointment ID.');
+                return;
+            }
+
+            try {
+                const appointment = await appointmentContract.methods.getAppointment(appointmentId).call();
+                document.getElementById('appointmentInfo').innerHTML = `
+                    <p>Patient ID: ${appointment[0]}</p>
+                    <p>Doctor ID: ${appointment[1]}</p>
+                    <p>Room ID: ${appointment[2]}</p>
+                    <p>Appointment Date: ${appointment[3]}</p>
+                `;
+            } catch (error) {
+                console.error(error);
+                alert('Error fetching appointment information: ' + error.message);
+            }
+        });
 
     } else {
-        // Notify the user if MetaMask is not detected in the browser
         alert('MetaMask not detected. Please install MetaMask to interact with this application.');
     }
 });

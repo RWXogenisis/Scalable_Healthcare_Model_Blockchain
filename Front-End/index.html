@@ -1,16 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blockchain Interface</title>
-    
-    <link rel="stylesheet" href="index.css">  <!-- Link to the external CSS file -->
+
+    <link rel="stylesheet" href="index.css"> <!-- Link to the external CSS file -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.0/web3.min.js"></script>
     <script src="app.js"></script>
 </head>
+
 <body>
     <div>
+        <h2>Select Action</h2>
+        <select id="actionSelector">
+            <option value="addDoctor">Add Doctor</option>
+            <option value="addPatient">Add Patient</option>
+            <option value="bookAppointment">Book Appointment</option>
+        </select>
+    </div>
+
+    <!-- Add Doctor Form -->
+    <div id="addDoctorSection">
         <h2>Add Doctor</h2>
         <form id="addDoctorForm">
             <label>ID: <input type="number" id="doctorId" required></label>
@@ -19,17 +31,61 @@
             <label>Department: <input type="text" id="doctorDepartment" required></label>
             <button type="submit">Add Doctor</button>
         </form>
-    </div>
-
-    <div>
-        <h2>Get Doctor Info</h2>
-        <form id="getDoctorForm">
-            <label>Doctor ID: <input type="number" id="doctorIdFetch" required></label>
-            <button type="submit">Get Doctor</button>
-        </form>
-        <div id="doctorInfo"></div>
+        <br>
+        <div>
+            <h2>Get Doctor Info</h2>
+            <form id="getDoctorForm">
+                <label>Doctor ID: <input type="number" id="doctorIdFetch" required></label>
+                <button type="submit">Get Doctor</button>
+            </form>
+            <div id="doctorInfo"></div>
+        </div>
     </div>
 
     <!-- Add similar sections for Patients and Appointments -->
+    <!-- Add Patient Form -->
+    <div id="addPatientSection" style="display: none;">
+        <h2>Add Patient</h2>
+        <form id="addPatientForm">
+            <label>ID: <input type="number" id="patientId" required></label>
+            <label>Name: <input type="text" id="patientName" required></label>
+            <label>Age: <input type="number" id="patientAge" required></label>
+            <label>Medical History: <input type="text" id="patientMedicalHistory" required></label>
+            <button type="submit">Add Patient</button>
+        </form>
+        <br>
+        <div>
+            <h2>Get Patient Info</h2>
+            <form id="getPatientForm">
+                <label>Patient ID: <input type="number" id="patientIdFetch" required></label>
+                <button type="submit">Get Patient</button>
+            </form>
+            <div id="patientInfo"></div>
+        </div>
+    </div>
+
+    <!-- Book Appointment Form -->
+    <div id="bookAppointmentSection" style="display: none;">
+        <h2>Book Appointment</h2>
+        <form id="bookAppointmentForm">
+            <label>Appointment ID: <input type="number" id="appointmentId" required></label>
+            <label>Patient ID: <input type="number" id="appointmentPatientId" required></label>
+            <label>Doctor ID: <input type="number" id="appointmentDoctorId" required></label>
+            <label>Room ID: <input type="number" id="appointmentRoomId" required></label>
+            <label>Date: <input type="text" id="appointmentDate" placeholder="YYYY-MM-DD" required></label>
+            <button type="submit">Book Appointment</button>
+        </form>
+        <br>
+        <div>
+            <h2>Get Appointment Info</h2>
+            <form id="getAppointmentForm">
+                <label>Appointment ID: <input type="number" id="appointmentIdFetch" required></label>
+                <button type="submit">Get Appointment</button>
+            </form>
+            <div id="appointmentInfo"></div>
+        </div>
+    </div>
+
 </body>
+
 </html>
