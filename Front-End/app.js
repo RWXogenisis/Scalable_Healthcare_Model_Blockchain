@@ -4,22 +4,22 @@ window.addEventListener('load', async () => {
     if (typeof window.ethereum !== 'undefined') {
         console.log('MetaMask is installed!');
 
-        // Request user's Ethereum account access
+        // Request user's Ethereum account access via MetaMask
         await window.ethereum.request({ method: 'eth_requestAccounts' });
 
         // Create a new instance of Web3 using MetaMask as the provider
         const web3 = new Web3(window.ethereum);
 
-        // Define the deployed contract addresses
-        const doctorAddress = '0x68493cd1ec17d79e47a17a6D9bB7358C34287f92';  // Replace with actual Doctor contract address
-        const patientAddress = '0x1e2cF3a04f2846dd7d7Ae96A7a3cdbABcfd43462';  // Replace with actual Patient contract address
-        const appointmentAddress = '0x8452c7842D7f83510b5703cb74b519C41a9419f4';  // Replace with actual Appointment contract address
+        // Define the deployed contract addresses (Replace with actual deployed addresses)
+        const doctorAddress = '0x68493cd1ec17d79e47a17a6D9bB7358C34287f92';  // Doctor contract address
+        const patientAddress = '0x1e2cF3a04f2846dd7d7Ae96A7a3cdbABcfd43462';  // Patient contract address
+        const appointmentAddress = '0x8452c7842D7f83510b5703cb74b519C41a9419f4';  // Appointment contract address
 
-        // Retrieve the user's Ethereum accounts
+        // Retrieve the user's Ethereum accounts and set the first one as default
         const accounts = await web3.eth.getAccounts();
-        const defaultAccount = accounts[0];  // Use the first account as the default account for transactions
+        const defaultAccount = accounts[0];
 
-        // Fetch contract ABIs (Application Binary Interface) and metadata for the deployed contracts
+        // Fetch contract ABIs (Application Binary Interface) from the build folder
         const doctorContractJson = await fetch('../build/contracts/DoctorContract.json').then(response => response.json());
         const patientContractJson = await fetch('../build/contracts/PatientContract.json').then(response => response.json());
         const appointmentContractJson = await fetch('../build/contracts/AppointmentContract.json').then(response => response.json());
@@ -29,7 +29,7 @@ window.addEventListener('load', async () => {
         const patientContract = new web3.eth.Contract(patientContractJson.abi, patientAddress);
         const appointmentContract = new web3.eth.Contract(appointmentContractJson.abi, appointmentAddress);
 
-        // Dropdown selection functionality
+        // Dropdown selection functionality: Shows or hides form sections based on user's action selection
         document.getElementById('actionSelector').addEventListener('change', function () {
             const selectedAction = this.value;
             document.getElementById('addDoctorSection').style.display = 'none';
@@ -45,11 +45,15 @@ window.addEventListener('load', async () => {
             }
         });
 
-        // Set the default to show 'Add Doctor' section
+        // Set the default view to show 'Add Doctor' section when the page loads
         document.getElementById('addDoctorSection').style.display = 'block';
 
         // ---------------- Doctor Contract Functionality ----------------
 
+        /**
+         * Adds a doctor by submitting the form.
+         * Calls the `addDoctor` function from the doctor contract.
+         */
         document.getElementById('addDoctorForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('doctorId').value;
@@ -58,6 +62,7 @@ window.addEventListener('load', async () => {
             const department = document.getElementById('doctorDepartment').value;
 
             try {
+                // Calls the smart contract function to add a new doctor
                 await doctorContract.methods.addDoctor(id, name, age, department)
                     .send({ from: defaultAccount });
                 alert('Doctor added successfully!');
@@ -67,6 +72,10 @@ window.addEventListener('load', async () => {
             }
         });
 
+        /**
+         * Fetches doctor details based on the input doctor ID.
+         * Calls the `getDoctor` function from the doctor contract.
+         */
         document.getElementById('getDoctorForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const doctorId = Number(document.getElementById('doctorIdFetch').value);
@@ -76,6 +85,7 @@ window.addEventListener('load', async () => {
             }
 
             try {
+                // Calls the smart contract function to fetch doctor details
                 const doctor = await doctorContract.methods.getDoctor(doctorId).call();
                 document.getElementById('doctorInfo').innerHTML = `
                     <p>Name: ${doctor[0]}</p>
@@ -90,6 +100,10 @@ window.addEventListener('load', async () => {
 
         // ---------------- Patient Contract Functionality ----------------
 
+        /**
+         * Adds a patient by submitting the form.
+         * Calls the `addPatient` function from the patient contract.
+         */
         document.getElementById('addPatientForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('patientId').value;
@@ -98,6 +112,7 @@ window.addEventListener('load', async () => {
             const medicalHistory = document.getElementById('patientMedicalHistory').value;
 
             try {
+                // Calls the smart contract function to add a new patient
                 await patientContract.methods.addPatient(id, name, age, medicalHistory)
                     .send({ from: defaultAccount });
                 alert('Patient added successfully!');
@@ -107,6 +122,10 @@ window.addEventListener('load', async () => {
             }
         });
 
+        /**
+         * Fetches patient details based on the input patient ID.
+         * Calls the `getPatient` function from the patient contract.
+         */
         document.getElementById('getPatientForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const patientId = Number(document.getElementById('patientIdFetch').value);
@@ -116,6 +135,7 @@ window.addEventListener('load', async () => {
             }
 
             try {
+                // Calls the smart contract function to fetch patient details
                 const patient = await patientContract.methods.getPatient(patientId).call();
                 document.getElementById('patientInfo').innerHTML = `
                     <p>Name: ${patient[0]}</p>
@@ -130,6 +150,10 @@ window.addEventListener('load', async () => {
 
         // ---------------- Appointment Contract Functionality ----------------
 
+        /**
+         * Books an appointment by submitting the form.
+         * Calls the `createAppointment` function from the appointment contract.
+         */
         document.getElementById('bookAppointmentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const appointmentId = document.getElementById('appointmentId').value;
@@ -139,21 +163,21 @@ window.addEventListener('load', async () => {
             const appointmentDate = document.getElementById('appointmentDate').value;
 
             try {
-                // Check if patient exists
+                // Check if the patient exists in the patient contract
                 const patientExists = await patientContract.methods.getPatient(patientId).call();
                 if (!patientExists || patientExists[0] === "") {
                     alert('Patient ID does not exist. Please add the patient before booking an appointment.');
                     return;
                 }
 
-                // Check if doctor exists
+                // Check if the doctor exists in the doctor contract
                 const doctorExists = await doctorContract.methods.getDoctor(doctorId).call();
                 if (!doctorExists || doctorExists[0] === "") {
                     alert('Doctor ID does not exist. Please add the doctor before booking an appointment.');
                     return;
                 }
 
-                // If both patient and doctor exist, create the appointment
+                // If both patient and doctor exist, proceed with booking the appointment
                 await appointmentContract.methods.createAppointment(appointmentId, patientId, doctorId, roomId, appointmentDate)
                     .send({ from: defaultAccount });
                 alert('Appointment booked successfully!');
@@ -163,7 +187,10 @@ window.addEventListener('load', async () => {
             }
         });
 
-
+        /**
+         * Fetches appointment details based on the input appointment ID.
+         * Calls the `getAppointment` function from the appointment contract.
+         */
         document.getElementById('getAppointmentForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const appointmentId = Number(document.getElementById('appointmentIdFetch').value);
@@ -173,6 +200,7 @@ window.addEventListener('load', async () => {
             }
 
             try {
+                // Calls the smart contract function to fetch appointment details
                 const appointment = await appointmentContract.methods.getAppointment(appointmentId).call();
                 document.getElementById('appointmentInfo').innerHTML = `
                     <p>Patient ID: ${appointment[0]}</p>
