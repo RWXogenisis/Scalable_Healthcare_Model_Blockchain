@@ -1,36 +1,58 @@
 const net = require('net');
+const crypto = require('crypto');
+const fs = require('fs');
+
+// Read the client's private key from the file
+const clientPrivateKey = fs.readFileSync('client_private_key.pem', 'utf8');
+
+// Read the server's public key from the file
+const serverPublicKey = fs.readFileSync('server_public_key.pem', 'utf8');
 
 const PORT = 8080;
 
-// Create a socket
 const client = new net.Socket();
 
-// Set server details and connect
 client.connect(PORT, '127.0.0.1', () => {
     console.log('Connected to server');
 });
 
-// Communication loop
 process.stdin.on('data', (data) => {
-    const message = data.toString();
+    const message = data.toString().trim();
 
-    // Send the message to the server
-    console.log('Enter the message: ');
-    client.write(message);
+    // Encrypt the message using the server's public key with RSA_PKCS1_OAEP_PADDING
+    const encryptedMessage = crypto.publicEncrypt({
+        key: serverPublicKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256" // Explicitly define OAEP hash
+    }, Buffer.from(message));
 
-    // Exit loop if user sends 'quit'
-    if (message.trim() === 'quit') {
-        client.end(); // Initiates socket shutdown
+    console.log('Sending encrypted message: ', encryptedMessage.toString('base64'));
+
+    client.write(encryptedMessage.toString('base64'));
+
+    if (message === 'quit') {
+        client.end();
     }
 });
 
-// Receive a response from the server
 client.on('data', (data) => {
-    console.log('Received from server: ' + data.toString());
+    try {
+        const encryptedMessage = Buffer.from(data.toString(), 'base64');
+
+        // Decrypt the message using the client's private key with RSA_PKCS1_OAEP_PADDING
+        const decryptedMessage = crypto.privateDecrypt({
+            key: clientPrivateKey,
+            padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+            oaepHash: "sha256" // Explicitly define OAEP hash
+        }, encryptedMessage);
+
+        console.log('Received from server (decrypted): ' + decryptedMessage.toString());
+    } catch (err) {
+        console.error('Decryption error:', err);
+    }
 });
 
-// Handle socket close
 client.on('close', () => {
     console.log('Connection closed');
-    process.exit(); // Exit the process when the connection is closed
+    process.exit();
 });
