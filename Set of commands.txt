@@ -7,6 +7,9 @@ truffle migrate --network besu
 
 truffle console --network development
 
+Notes for ourselves:
+Change the address of the contract in the app.js to get the authorization error in the form of json RPC error.
+
 Get a deployed instance:
 const employeeDetails = await EmployeeDetails.deployed();
 
