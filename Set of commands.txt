@@ -2,6 +2,9 @@ const { Details } = require("@mui/icons-material")
 
 truffle compile
 truffle migrate --reset --network development
+// for migrasting with hyperledeger:
+truffle migrate --network besu
+
 truffle console --network development
 
 Get a deployed instance:
