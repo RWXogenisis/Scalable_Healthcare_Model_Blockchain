@@ -10,7 +10,7 @@ module.exports = {
 			type: "fabric-evm",
 		},
 		besu: {
-			provider: () => new HDWalletProvider("trash spirit border embark gain wish audit ordinary fence nose walnut hazard", "http://127.0.0.1:7545"),
+			provider: () => new HDWalletProvider("absurd glass pilot caution repeat bubble become general place real fork pair", "http://127.0.0.1:7545"),
 			network_id: "5777",    // Match any network id
 			gas: 4500000,          // Gas limit for Besu
 			gasPrice: 1000000000,  // Gas price in wei

@@ -11,9 +11,9 @@ window.addEventListener('load', async () => {
         const web3 = new Web3(window.ethereum);
 
         // Define the deployed contract addresses (Replace with actual deployed addresses)
-        const doctorAddress = '0xa04d8Fe3F2BB3fDF8400400a8DC16fFfD889336C';  // Doctor contract address
-        const patientAddress = '0x3903ccbaa02eCce635CE14851e2b7D494F0C0005';  // Patient contract address
-        const appointmentAddress = '0xD9D5B657447F0CB3E632E13E06AA745CDC1fE159';  // Appointment contract address
+        const doctorAddress = '0x1114974318c75cD4080C1DFF9f3ae9FD74cc9D0e';  // Doctor contract address
+        const patientAddress = '0x4A986F7CB6929Ab540BE2e8b80bed7305579aaEc';  // Patient contract address
+        const appointmentAddress = '0xE3Cb9Cd1e82228d485755b0c52CC762457aEE018';  // Appointment contract address
 
         // Retrieve the user's Ethereum accounts and set the first one as default
         const accounts = await web3.eth.getAccounts();
