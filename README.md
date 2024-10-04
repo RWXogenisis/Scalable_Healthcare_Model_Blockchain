@@ -154,7 +154,7 @@ module.exports = {
 };
 ```
 
-![image](https://github.com/user-attachments/assets/a1d204d7-6022-42bd-b524-175011697cf0)
+![image](https://github.com/user-attachments/assets/04e3b759-5920-4450-8739-a0d6741c0f34)
 
 ## Scalability Considerations
 
