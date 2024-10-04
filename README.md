@@ -106,7 +106,11 @@ truffle init
 
 This command sets up the basic project structure.
 
-*(Insert screenshot of the project directory structure here)*
+##### Running the command
+![image](https://github.com/user-attachments/assets/d2c725f5-08bc-435b-a9bd-e84a9a0a985b)
+
+##### File directory created
+![image](https://github.com/user-attachments/assets/b63ecf26-06c4-4c8a-a317-12dc3e78d981)
 
 #### 5. Create Contracts and Migrations
 
